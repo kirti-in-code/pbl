@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="animate-fade-in-up">
+    <div class="mb-5">
+        <h2 class="fw-bold mb-1">Caretaker Dashboard</h2>
+        <p class="text-muted">Detailed monitoring of patient medication adherence and status.</p>
+    </div>
+
+    {% for row in rows %}
+    <div class="card border-0 shadow-sm mb-4 overflow-hidden">
+        <!-- Patient Header -->
+        <div class="card-header bg-white border-0 py-4 px-4 d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-3">
+                <div class="bg-primary-subtle p-3 rounded-circle">
+                    <i data-lucide="user" class="text-primary"></i>
+                </div>
+                <div>
+                    <h4 class="fw-bold mb-1 text-dark">{{ row.user.name }}</h4>
+                    <span class="text-muted small"><i data-lucide="mail" class="lucide-xs me-1"></i> {{ row.user.email }}</span>
+                </div>
+            </div>
+            <div class="text-end">
+                {% if row.missed_count > 5 %}
+                    <div class="badge bg-danger rounded-pill px-3 py-2 d-inline-flex align-items-center gap-1">
+                        <i data-lucide="alert-octagon" class="lucide-sm"></i> Critical
+                    </div>
+                {% elif row.missed_count > 2 %}
+                    <div class="badge bg-warning text-dark rounded-pill px-3 py-2 d-inline-flex align-items-center gap-1">
+                        <i data-lucide="alert-triangle" class="lucide-sm"></i> Watch
+                    </div>
+                {% else %}
+                    <div class="badge bg-success rounded-pill px-3 py-2 d-inline-flex align-items-center gap-1">
+                        <i data-lucide="check-circle" class="lucide-sm"></i> Stable
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Summary Stats -->
+        <div class="bg-light bg-opacity-50 border-top border-bottom py-3 px-4">
+            <div class="row text-center">
+                <div class="col-4 border-end">
+                    <small class="text-muted d-block mb-1">Active Medicines</small>
+                    <span class="fw-bold text-primary fs-5">{{ row.med_count }}</span>
+                </div>
+                <div class="col-4 border-end">
+                    <small class="text-muted d-block mb-1">Total Taken</small>
+                    <span class="fw-bold text-success fs-5">{{ row.taken_count }}</span>
+                </div>
+                <div class="col-4">
+                    <small class="text-muted d-block mb-1">Total Missed</small>
+                    <span class="fw-bold text-danger fs-5">{{ row.missed_count }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Medicine Details Table -->
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="px-4 py-3">Medicine Name</th>
+                            <th class="py-3">Schedule</th>
+                            <th class="py-3 text-center">Taken</th>
+                            <th class="py-3 text-center">Missed</th>
+                            <th class="px-4 py-3 text-end">Adherence</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for med in row.medicines %}
+                        <tr>
+                            <td class="px-4">
+                                <div class="fw-bold text-dark">{{ med.name }}</div>
+                                <small class="text-muted">{{ med.dosage }}</small>
+                            </td>
+                            <td>
+                                <div class="badge bg-white text-primary border rounded-pill px-2 py-1 small">
+                                    <i data-lucide="clock" class="lucide-xs me-1"></i> {{ med.time }}
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <span class="text-success fw-bold">{{ med.taken }}</span>
+                            </td>
+                            <td class="text-center">
+                                <span class="text-danger fw-bold">{{ med.missed }}</span>
+                            </td>
+                            <td class="px-4 text-end">
+                                {% set total = med.taken + med.missed %}
+                                {% if total > 0 %}
+                                    {% set rate = (med.taken / total * 100)|round|int %}
+                                    <div class="d-flex align-items-center justify-content-end gap-2">
+                                        <div class="progress flex-grow-1" style="height: 6px; width: 60px; max-width: 60px;">
+                                            <div class="progress-bar bg-{{ 'success' if rate > 80 else 'warning' if rate > 50 else 'danger' }}" 
+                                                 role="progressbar" style="width: {{ rate }}%"></div>
+                                        </div>
+                                        <span class="small fw-bold">{{ rate }}%</span>
+                                    </div>
+                                {% else %}
+                                    <span class="text-muted small">No logs</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="text-center py-5 card border-0 shadow-sm">
+        <div class="bg-light d-inline-flex p-4 rounded-circle mb-3">
+            <i data-lucide="users" class="text-muted" style="width: 48px; height: 48px;"></i>
+        </div>
+        <h4 class="fw-bold">No patients connected</h4>
+        <p class="text-muted mb-0">You are currently not monitoring any elderly patients.</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

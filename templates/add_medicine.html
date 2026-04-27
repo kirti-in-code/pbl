@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="animate-fade-in-up">
+    <div class="mb-4">
+        <h2 class="fw-bold mb-1">Add Medicine</h2>
+        <p class="text-muted">Enter the details of your medication schedule.</p>
+    </div>
+
+    <div class="card p-4 p-md-5 border-0 shadow-sm">
+        <form method="post" action="{{ url_for('medicines.add_medicine') }}">
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <label class="form-label fw-medium">Medicine Name</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0"><i data-lucide="pill" class="lucide-sm text-muted"></i></span>
+                        <input type="text" name="name" class="form-control border-start-0" placeholder="e.g. Paracetamol" required>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-medium">Dosage</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0"><i data-lucide="activity" class="lucide-sm text-muted"></i></span>
+                        <input type="text" name="dosage" class="form-control border-start-0" placeholder="e.g. 500mg" required>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <label class="form-label fw-medium">Times (comma-separated HH:MM)</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0"><i data-lucide="clock" class="lucide-sm text-muted"></i></span>
+                        <input type="text" name="time" class="form-control border-start-0" placeholder="08:00, 13:00, 20:00" required>
+                    </div>
+                    <div class="form-text mt-2">Enter multiple times separated by commas (24-hour format).</div>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-medium">Start Date</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0"><i data-lucide="calendar" class="lucide-sm text-muted"></i></span>
+                        <input type="date" name="start_date" class="form-control border-start-0" required>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-medium">End Date</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0"><i data-lucide="calendar-check" class="lucide-sm text-muted"></i></span>
+                        <input type="date" name="end_date" class="form-control border-start-0" required>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-5 d-flex gap-3">
+                <button class="btn btn-primary px-5 py-2 fw-bold d-flex align-items-center gap-2">
+                    <i data-lucide="save" class="lucide-sm"></i> Save Medicine
+                </button>
+                <a href="{{ url_for('medicines.medicines_page') }}" class="btn btn-light px-4 py-2">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

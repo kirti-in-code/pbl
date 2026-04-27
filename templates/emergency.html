@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="animate-fade-in-up">
+    <div class="mb-4">
+        <h2 class="fw-bold mb-1">Emergency Contact</h2>
+        <p class="text-muted">Keep your primary contact information up to date for quick access.</p>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="card p-4 p-md-5 border-0 shadow-sm h-100">
+                <h5 class="fw-bold mb-4 d-flex align-items-center gap-2">
+                    <i data-lucide="user-cog" class="text-primary"></i> Contact Details
+                </h5>
+                <form method="post" action="{{ url_for('emergency.emergency_page') }}">
+                    <div class="mb-4">
+                        <label class="form-label fw-medium">Contact Name</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0"><i data-lucide="user" class="lucide-sm text-muted"></i></span>
+                            <input class="form-control border-start-0" name="name" value="{{ contact.name if contact else '' }}" placeholder="e.g. Jane Doe" required>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label fw-medium">Phone Number</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0"><i data-lucide="phone" class="lucide-sm text-muted"></i></span>
+                            <input class="form-control border-start-0" name="phone" value="{{ contact.phone if contact else '' }}" placeholder="+1 234 567 890" required>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary px-4 py-2 fw-bold d-flex align-items-center gap-2">
+                        <i data-lucide="save" class="lucide-sm"></i> Save Contact
+                    </button>
+                </form>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card p-4 p-md-5 border-0 shadow-lg h-100 bg-danger text-white position-relative overflow-hidden">
+                <div class="position-relative z-1">
+                    <h5 class="fw-bold mb-3 d-flex align-items-center gap-2">
+                        <i data-lucide="alert-triangle"></i> Emergency Help
+                    </h5>
+                    <p class="opacity-75 mb-4">Click the button below to display emergency contact information in large text for immediate use.</p>
+                    
+                    <div class="d-flex flex-column gap-2">
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-light btn-lg text-danger fw-bold flex-grow-1 py-3 shadow-sm d-flex align-items-center justify-content-center gap-2" 
+                                    onclick="showEmergency('{{ contact.name if contact else '' }}', '{{ contact.phone if contact else '' }}')">
+                                <i data-lucide="phone-call" class="lucide-sm"></i> Call for Help
+                            </button>
+                            <a href="sms:{{ contact.phone if contact else '' }}?body=Emergency! I need help. Please contact me immediately." 
+                               class="btn btn-light btn-lg text-primary fw-bold flex-grow-1 py-3 shadow-sm d-flex align-items-center justify-content-center gap-2">
+                                <i data-lucide="message-square" class="lucide-sm"></i> SMS App
+                            </a>
+                        </div>
+                        <button id="direct-sms-btn" class="btn btn-warning btn-lg text-dark fw-bold w-100 py-3 shadow-sm d-flex align-items-center justify-content-center gap-2" 
+                                onclick="sendDirectAlert()">
+                            <i data-lucide="zap" class="lucide-sm"></i> Direct SMS Alert
+                        </button>
+                    </div>
+                    
+                    <div id="emergencyInfo" class="mt-4 p-3 bg-white rounded-3 text-dark d-none animate-fade-in-up shadow-sm">
+                        <!-- Content will be injected via JS -->
+                    </div>
+                </div>
+                <i data-lucide="heart" class="position-absolute opacity-10" style="bottom: -30px; right: -30px; width: 200px; height: 200px;"></i>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function sendDirectAlert() {
+        const btn = document.getElementById('direct-sms-btn');
+        const originalText = btn.innerHTML;
+        
+        btn.disabled = true;
+        btn.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span> Sending...`;
+        
+        fetch("{{ url_for('emergency.trigger_alert') }}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+            } else {
+                alert("Error: " + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert("An error occurred while sending the alert.");
+        })
+        .finally(() => {
+            btn.disabled = false;
+            btn.innerHTML = originalText;
+        });
+    }
+
+    function showEmergency(name, phone) {
+        const infoDiv = document.getElementById('emergencyInfo');
+        if (!name || !phone) {
+            infoDiv.innerHTML = `
+                <div class="text-danger fw-bold text-center">
+                    <i data-lucide="alert-circle" class="mb-2"></i>
+                    <p class="mb-0">No emergency contact saved!</p>
+                </div>`;
+        } else {
+            infoDiv.innerHTML = `
+                <div class="text-center">
+                    <p class="text-muted small mb-1">Emergency Contact</p>
+                    <h3 class="fw-bold mb-2">${name}</h3>
+                    <a href="tel:${phone}" class="btn btn-danger w-100 py-2 fs-4 fw-bold mb-2">
+                        ${phone}
+                    </a>
+                    <p class="small text-muted mb-0">Tap the number to call</p>
+                </div>`;
+        }
+        infoDiv.classList.remove('d-none');
+        lucide.createIcons();
+    }
+</script>
+{% endblock %}

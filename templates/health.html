@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="animate-fade-in-up">
+    <div class="mb-4">
+        <h2 class="fw-bold mb-1">Health Tracker</h2>
+        <p class="text-muted">Monitor your vital signs and health progress.</p>
+    </div>
+
+    <div class="card p-4 p-md-5 border-0 shadow-sm mb-4">
+        <h5 class="fw-bold mb-4 d-flex align-items-center gap-2">
+            <i data-lucide="plus-circle" class="text-primary"></i> New Health Record
+        </h5>
+        <form method="post" action="{{ url_for('health.add_health_record') }}">
+            <div class="row g-4">
+                <div class="col-md-3">
+                    <label class="form-label fw-medium">Blood Pressure</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0"><i data-lucide="heart" class="lucide-sm text-muted"></i></span>
+                        <input name="bp" class="form-control border-start-0" placeholder="120/80" required>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-medium">Sugar Level</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0"><i data-lucide="droplet" class="lucide-sm text-muted"></i></span>
+                        <input name="sugar" type="number" step="0.1" class="form-control border-start-0" placeholder="90" required>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-medium">Weight (kg)</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0"><i data-lucide="scale" class="lucide-sm text-muted"></i></span>
+                        <input name="weight" type="number" step="0.1" class="form-control border-start-0" placeholder="70" required>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-medium">Date</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0"><i data-lucide="calendar" class="lucide-sm text-muted"></i></span>
+                        <input name="date" type="date" class="form-control border-start-0" required>
+                    </div>
+                </div>
+            </div>
+            <button class="btn btn-primary mt-4 px-4 py-2 fw-bold d-flex align-items-center gap-2">
+                <i data-lucide="save" class="lucide-sm"></i> Save Record
+            </button>
+        </form>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-7">
+            <div class="card p-4 h-100 border-0 shadow-sm">
+                <h5 class="fw-bold mb-4 d-flex align-items-center gap-2">
+                    <i data-lucide="trending-up" class="text-secondary"></i> Health Trends
+                </h5>
+                <div style="min-height: 300px;">
+                    <canvas id="healthChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-5">
+            <div class="card p-4 h-100 border-0 shadow-sm">
+                <h5 class="fw-bold mb-4 d-flex align-items-center gap-2">
+                    <i data-lucide="history" class="text-muted"></i> Recent Records
+                </h5>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light border-0">
+                            <tr>
+                                <th class="rounded-start">Date</th>
+                                <th>BP</th>
+                                <th>Sugar</th>
+                                <th class="rounded-end">Weight</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for r in records %}
+                            <tr>
+                                <td class="small fw-medium">{{ r.date.strftime('%b %d, %Y') if r.date else 'N/A' }}</td>
+                                <td><span class="badge bg-primary-subtle text-primary">{{ r.bp }}</span></td>
+                                <td><span class="badge bg-warning-subtle text-warning">{{ r.sugar }}</span></td>
+                                <td><span class="badge bg-success-subtle text-success">{{ r.weight }}</span></td>
+                            </tr>
+                        {% else %}
+                            <tr><td colspan="4" class="text-center py-4 text-muted small">No records found.</td></tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="animate-fade-in-up">
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <div>
+            <h2 class="fw-bold mb-1">Welcome, {{ current_user.name }}!</h2>
+            <p class="text-muted mb-0">Here's an overview of your health and medicines today.</p>
+        </div>
+        <div class="d-none d-md-block">
+            <div class="badge bg-white text-dark shadow-sm p-2 px-3 rounded-pill border">
+                <i data-lucide="calendar" class="lucide-sm me-2 text-primary"></i>
+                <span id="current-date"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-5">
+        <div class="col-md-4">
+            <div class="card stat-card p-4 h-100">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div class="bg-primary-subtle p-3 rounded-4">
+                        <i data-lucide="pill" class="text-primary"></i>
+                    </div>
+                    <span class="badge bg-primary-subtle text-primary rounded-pill">Total</span>
+                </div>
+                <h6 class="text-muted fw-medium">Active Medicines</h6>
+                <h2 class="fw-bold mb-0">{{ meds|length }}</h2>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card stat-card p-4 h-100" style="--primary-color: var(--secondary-color)">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div class="bg-success-subtle p-3 rounded-4">
+                        <i data-lucide="check-circle" class="text-success"></i>
+                    </div>
+                    <span class="badge bg-success-subtle text-success rounded-pill">Today</span>
+                </div>
+                <h6 class="text-muted fw-medium">Taken Today</h6>
+                <h2 class="fw-bold mb-0 text-success">{{ taken_count }}</h2>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card stat-card p-4 h-100" style="--primary-color: var(--danger-color)">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div class="bg-danger-subtle p-3 rounded-4">
+                        <i data-lucide="alert-circle" class="text-danger"></i>
+                    </div>
+                    <span class="badge bg-danger-subtle text-danger rounded-pill">Pending</span>
+                </div>
+                <h6 class="text-muted fw-medium">Missed Today</h6>
+                <h2 class="fw-bold mb-0 text-danger">{{ missed_count }}</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card p-4 mb-4">
+                <div class="d-flex align-items-center gap-3 mb-4">
+                    <div class="bg-warning-subtle p-2 rounded-3">
+                        <i data-lucide="bell" class="text-warning"></i>
+                    </div>
+                    <h5 class="mb-0 fw-bold">Quick Reminder Check</h5>
+                </div>
+                <p class="text-muted mb-4">Test your browser notification and voice assistant settings to ensure you never miss a dose.</p>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-outline-primary d-flex align-items-center gap-2" onclick="sendDemoNotification()">
+                        <i data-lucide="app-window" class="lucide-sm"></i> Test Notification
+                    </button>
+                    <button class="btn btn-outline-success d-flex align-items-center gap-2" onclick="voiceReminder('Please take your medicine now.')">
+                        <i data-lucide="volume-2" class="lucide-sm"></i> Test Voice Reminder
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card p-4 h-100 bg-primary text-white border-0 shadow-lg overflow-hidden position-relative">
+                <div class="position-relative z-1">
+                    <h5 class="fw-bold mb-3">Need Help?</h5>
+                    <p class="opacity-75 mb-4">Contact your emergency contact or caretaker immediately if you feel unwell.</p>
+                    <a href="{{ url_for('emergency.emergency_page') }}" class="btn btn-light text-primary fw-bold w-100">
+                        Emergency Contact
+                    </a>
+                </div>
+                <i data-lucide="heart" class="position-absolute opacity-10" style="bottom: -20px; right: -20px; width: 150px; height: 150px;"></i>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Set current date
+    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    document.getElementById('current-date').textContent = new Date().toLocaleDateString(undefined, options);
+    
+    // Re-initialize icons for newly added elements
+    lucide.createIcons();
+</script>
+{% endblock %}
